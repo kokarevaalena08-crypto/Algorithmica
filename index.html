@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Алгоритмика — интерактивный курс</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  :root {
+    --bg-body: #090d16;
+    --bg-card: #111827;
+    --bg-sub: #1e293b;
+    --border: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-glow: rgba(99, 102, 241, 0.25);
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --radius: 14px;
+    --header-bg: rgba(17, 24, 39, 0.85);
+  }
+
+  body.light-theme {
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-sub: #f1f5f9;
+    --border: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --accent-glow: rgba(79, 70, 229, 0.15);
+    --header-bg: rgba(255, 255, 255, 0.85);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background-color: var(--header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .brand-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .logo-icon-box {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px var(--accent-glow);
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  body.light-theme .brand-title {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .brand-title span {
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .badge {
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .badge-streak {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border-color: rgba(245, 158, 11, 0.3);
+    font-weight: 600;
+  }
+
+  .badge-user {
+    background: var(--bg-sub);
+    color: var(--text-main);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 1.25rem 1rem;
+    flex: 1;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--bg-card);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .btn:hover { background: var(--accent-hover); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+  .btn-outline:hover { background: var(--bg-sub); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .auth-banner {
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(16,185,129,0.1));
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .task-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .task-card.completed { border-color: rgba(16, 185, 129, 0.4); }
+  .task-card.locked { opacity: 0.55; }
+  .task-title { font-weight: 600; font-size: 0.95rem; }
+  .task-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.75rem; }
+  .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+  .tag-theory { background: rgba(99, 102, 241, 0.15); color: var(--accent); }
+  .tag-interactive { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+  .tag-practice { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    line-height: 1.55;
+    font-size: 0.9rem;
+  }
+
+  .modal-footer {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .code-box {
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    padding: 0.85rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin: 0.75rem 0;
+    white-space: pre-wrap;
+  }
+
+  .quiz-box { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .quiz-title { font-weight: 600; margin-bottom: 0.6rem; color: var(--text-main); }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+
+  .quiz-item {
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .quiz-item:hover { border-color: var(--accent); }
+  .quiz-item.selected { border-color: var(--accent); background: rgba(99, 102, 241, 0.15); }
+  .quiz-item.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.2); font-weight: 600; }
+  .quiz-item.wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.2); }
+
+  .order-list { display: flex; flex-direction: column; gap: 6px; margin: 1rem 0; }
+
+  .order-item {
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+
+  .order-btns { display: flex; gap: 4px; }
+
+  .flowchart-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--bg-sub);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .flow-node {
+    padding: 8px 14px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    background: var(--bg-card);
+    transition: all 0.3s;
+    width: 200px;
+  }
+
+  .flow-node.active-step {
+    border-color: var(--warning);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    transform: scale(1.03);
+  }
+
+  .flow-oval { border-radius: 9999px; }
+  .flow-rhombus { border-color: var(--accent); }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: 1rem;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    position: relative;
+  }
+
+  .cal-day.active {
+    background: rgba(16, 185, 129, 0.25);
+    border-color: var(--success);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 1rem;
+  }
+
+  .ach-card {
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.45;
+    transition: all 0.3s;
+  }
+
+  .ach-card.unlocked {
+    opacity: 1;
+    border-color: rgba(99, 102, 241, 0.5);
+    background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.08));
+  }
+
+  .ach-icon { font-size: 1.8rem; }
+  .ach-title { font-weight: 600; font-size: 0.85rem; }
+  .ach-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+  input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    background: var(--bg-sub);
+    border: 1px solid var(--border);
+    padding: 9px 12px;
+    border-radius: 6px;
+    color: var(--text-main);
+    margin-top: 4px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand-container" onclick="switchTab('modules')">
+    <div class="logo-icon-box">⚡</div>
+    <div class="brand-title">Алгоритм<span>ика</span></div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-outline btn-sm" onclick="toggleTheme()" id="themeBtn" title="Сменить тему">🌓</button>
+    <div class="badge badge-streak" id="streakBadge">🔥 0 дн.</div>
+    <div class="badge badge-user" id="userBadge">👤 Гость</div>
+    <button class="btn btn-outline btn-sm" onclick="handleAuthButtonClick()" id="authBtn">Вход</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="guestBanner" class="auth-banner" style="display: none;">
+    <div>
+      <div style="font-weight: 600; font-size: 0.95rem;">👋 Добро пожаловать!</div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Создайте новую учетную запись или войдите в существующую.</div>
+    </div>
+    <button class="btn btn-sm" onclick="openAuthModal()">Войти / Регистрация</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('modules')">📚 Задания</button>
+    <button class="tab-btn" onclick="switchTab('desc')">📖 О курсе</button>
+    <button class="tab-btn" onclick="switchTab('streak')">🎯 Стрики и достижения</button>
+    <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
+  </div>
+
+  <!-- 1. ЗАДАНИЯ -->
+  <div id="tab-modules" class="tab-content active">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+      <h3 style="font-size: 1.05rem;">Модуль 1: Основы теории алгоритмов</h3>
+    </div>
+    <div class="task-list" id="tasksContainer"></div>
+  </div>
+
+  <!-- 2. О КУРСЕ -->
+  <div id="tab-desc" class="tab-content">
+    <div class="card">
+      <h3 style="margin-bottom: 0.5rem;">📖 О курсе</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+        Курс объединяет теоретические знания, пошаговые интерактивные визуализаторы и практические задачи на трассировку.
+      </p>
+      <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 8px;">
+        <div style="background: var(--bg-sub); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem;">
+          <b style="color: var(--accent);">🧩 Интерактивные модули:</b> визуализация блок-схем и сборка шагов алгоритма.
+        </div>
+        <div style="background: var(--bg-sub); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem;">
+          <b style="color: var(--warning);">🏆 Награды и стрики:</b> зарабатывайте достижения за точность и регулярность.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. СТРИКИ И АЧИВКИ -->
+  <div id="tab-streak" class="tab-content">
+    <div class="card">
+      <h3>🎯 Ваша активность</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 1rem;">
+        <div style="background: var(--bg-sub); padding: 1rem; border-radius: 8px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: var(--warning);" id="streakDaysCount">0</div>
+          <div style="color: var(--text-muted); font-size: 0.8rem;">Дней ударного режима</div>
+        </div>
+        <div style="background: var(--bg-sub); padding: 1rem; border-radius: 8px; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: var(--accent);" id="tasksDoneCount">0 / 4</div>
+          <div style="color: var(--text-muted); font-size: 0.8rem;">Пройдено заданий</div>
+        </div>
+      </div>
+      <div style="margin-top: 1.25rem;">
+        <div style="font-weight: 600; font-size: 0.9rem;">📅 Календарь активности (за последние 4 недели)</div>
+        <div class="calendar-grid" id="activityCalendar"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>🏆 Достижения</h3>
+      <div class="achievements-grid" id="achievementsContainer"></div>
+    </div>
+  </div>
+
+  <!-- 4. НАСТРОЙКИ -->
+  <div id="tab-settings" class="tab-content">
+    <div id="devCheatSheet" class="card" style="display: none; border-color: rgba(99, 102, 241, 0.5);">
+      <h3 style="color: var(--accent); margin-bottom: 0.5rem;">👑 Ключи к ответам (режим разработчика)</h3>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+        <p><b>1. Понятия и свойства:</b> 1 → Результативность, 2 → Однозначный результат</p>
+        <p><b>2. Интерактивная блок-схема:</b> 1 → Ромб, 2 → Параллелограмм</p>
+        <p><b>3. Конструктор алгоритма:</b> [Ввод A и B] → [A > B?] → [MAX = A] → [Вывод MAX]</p>
+        <p><b>4. Практика:</b> Ответ: <code>10</code></p>
+      </div>
+      <div style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
+        <button class="btn btn-outline btn-sm" onclick="completeAllAtOnce()">⚡ Закрыть все задания</button>
+        <button class="btn btn-outline btn-sm" onclick="userState.streak += 5; persistData(); checkAchievements();">🔥 +5 к стрику</button>
+        <button class="btn btn-danger btn-sm" onclick="resetUserProgress()">Сбросить прогресс</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>☁️ Перенос аккаунта и прогресса</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0;">
+        Ключ синхронизации для переноса данных между устройствами:
+      </p>
+      <textarea id="syncTokenArea" rows="2" readonly style="font-family: monospace; font-size: 0.75rem;"></textarea>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-sm" onclick="copySyncCode()">📋 Скопировать</button>
+        <button class="btn btn-outline btn-sm" onclick="importSyncCode()">📥 Импортировать</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА ЗАДАНИЯ -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h4 id="modalTitle">Задание</h4>
+      <button class="btn btn-outline btn-sm" style="border:none; cursor:pointer;" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- МОДАЛКА АВТОРИЗАЦИИ -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal" style="max-width: 360px;">
+    <div class="modal-header">
+      <h4>👤 Авторизация</h4>
+      <button class="btn btn-outline btn-sm" style="border:none; cursor:pointer;" onclick="closeAuthModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label style="font-size: 0.8rem; color: var(--text-muted);">Логин</label>
+      <input type="text" id="authLogin" placeholder="Введите логин">
+      <label style="font-size: 0.8rem; color: var(--text-muted);">Пароль</label>
+      <input type="password" id="authPass" placeholder="Введите пароль">
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+        <button class="btn" onclick="handleAuth('login')">🔑 Войти в существующий аккаунт</button>
+        <button class="btn btn-outline" onclick="handleAuth('register')">✨ Создать новую учетную запись</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ACHIEVEMENTS_LIST = [
+    { id: 'first_step', icon: '🎓', title: 'Первый шаг', desc: 'Сдать любое первое задание' },
+    { id: 'theorist', icon: '🧠', title: 'Знаток теории', desc: 'Успешно завершить все 3 темы теории' },
+    { id: 'builder', icon: '🧩', title: 'Архитектор логики', desc: 'Правильно собрать алгоритм в конструкторе' },
+    { id: 'practitioner', icon: '⚡', title: 'Практик', desc: 'Решить практическую задачу по алгоритмам' },
+    { id: 'on_fire', icon: '🔥', title: 'В огне', desc: 'Удерживать стрик от 3 дней подряд' }
+  ];
+
+  const TASKS = [
+    {
+      id: 1,
+      title: "1. Понятия и свойства алгоритма",
+      type: "theory",
+      theoryText: `
+        <p><b>Алгоритм</b> — это строгая система правил, определяющая последовательность действий для решения задачи.</p>
+        <div class="code-box">Свойства алгоритма:
+• Дискретность — деление на отдельные простые шаги.
+• Детерминированность — однозначность каждого шага.
+• Результативность — обязательное получение результата.
+• Массовость — применимость к целому классу задач.</div>
+      `,
+      test: [
+        {
+          question: "Какое свойство алгоритма требует обязательного получения результата?",
+          options: ["Детерминированность", "Результативность", "Дискретность"],
+          correct: 1
+        },
+        {
+          question: "Что означает свойство «детерминированность»?",
+          options: ["Однозначность выполнения каждого шага", "Конечность количества шагов", "Красивое оформление кода"],
+          correct: 0
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: "2. Интерактивная блок-схема (трассировщик)",
+      type: "flowchart_interactive",
+      theoryText: `
+        <p>Блок-схемы отображают логику переходов алгоритма. Попробуйте пошаговую симуляцию:</p>
+        <div class="flowchart-viz" id="flowViz">
+          <div class="flow-node flow-oval" id="fn-1">1. Начало: X = 8</div>
+          <div class="flow-node flow-rhombus" id="fn-2">2. Условие: X &gt; 5 ?</div>
+          <div class="flow-node" id="fn-3">3. Ветка «Да»: X = X * 2</div>
+          <div class="flow-node flow-oval" id="fn-4">4. Конец: Вывод X = 16</div>
+        </div>
+        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 1rem;">
+          <button class="btn btn-outline btn-sm" onclick="stepFlowViz()">▶️ Следующий шаг схемы</button>
+          <button class="btn btn-outline btn-sm" onclick="resetFlowViz()">🔄 Сбросить симуляцию</button>
+        </div>
+      `,
+      test: [
+        {
+          question: "Какая фигура используется для ветвления (IF / ELSE)?",
+          options: ["Прямоугольник", "Ромб", "Параллелограмм"],
+          correct: 1
+        },
+        {
+          question: "В какой фигуре записывается операция вывода значения?",
+          options: ["Параллелограмм", "Овал", "Ромб"],
+          correct: 0
+        }
+      ]
+    },
+    {
+      id: 3,
+      title: "3. Конструктор алгоритма (поиск максимума)",
+      type: "order_builder",
+      introText: `
+        <p><b>Задача:</b> Расставьте шаги алгоритма поиска максимума из двух чисел <code>A</code> и <code>B</code> в правильном порядке:</p>
+      `,
+      initialItems: [
+        { id: 'step_out', text: '4. Вывести MAX на экран' },
+        { id: 'step_in', text: '1. Ввести значения чисел A и B' },
+        { id: 'step_cond', text: '2. Проверить условие: A > B ?' },
+        { id: 'step_set', text: '3. Если ДА, то присвоить MAX = A, иначе MAX = B' }
+      ],
+      correctOrder: ['step_in', 'step_cond', 'step_set', 'step_out']
+    },
+    {
+      id: 4,
+      title: "4. Практика: анализ ветвления",
+      type: "practice",
+      taskText: `
+        <p>Определите итоговое значение переменной <b>x</b> при стартовом <b>x = 7</b>:</p>
+        <div class="code-box">если x > 5:
+    x = x * 2 - 4
+иначе:
+    x = x + 10</div>
+        <label style="font-size: 0.8rem; color: var(--text-muted);">Введите числовой ответ:</label>
+        <input type="text" id="practiceAnswer" placeholder="Ваш ответ...">
+      `,
+      correctAnswer: "10"
+    }
+  ];
+
+  let currentUser = null;
+  let isDev = false;
+  let userState = {
+    completedTasks: [],
+    streak: 0,
+    achievements: [],
+    activityHistory: [],
+    lastLoginDate: new Date().toISOString().split('T')[0]
+  };
+
+  function triggerConfetti() {
+    if (typeof confetti === 'function') {
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+    }
+  }
+
+  function initApp() {
+    if (localStorage.getItem('algo_theme') === 'light') {
+      document.body.classList.add('light-theme');
+    }
+
+    let db = JSON.parse(localStorage.getItem('algo_users_db') || "null");
+    if (!db) {
+      db = {
+        "Рамен": {
+          pass: "1234",
+          completedTasks: [1, 2, 3],
+          streak: 15,
+          achievements: ['first_step', 'theorist', 'builder', 'on_fire'],
+          activityHistory: [new Date().toISOString().split('T')[0]],
+          isDev: true,
+          lastLoginDate: new Date().toISOString().split('T')[0]
+        }
+      };
+      localStorage.setItem('algo_users_db', JSON.stringify(db));
+    } else if (!db["Рамен"]) {
+      db["Рамен"] = {
+        pass: "1234",
+        completedTasks: [1, 2, 3],
+        streak: 15,
+        achievements: ['first_step', 'theorist', 'builder', 'on_fire'],
+        activityHistory: [new Date().toISOString().split('T')[0]],
+        isDev: true,
+        lastLoginDate: new Date().toISOString().split('T')[0]
+      };
+      localStorage.setItem('algo_users_db', JSON.stringify(db));
+    }
+
+    const activeUser = localStorage.getItem('algo_active_user');
+    if (activeUser && db[activeUser]) {
+      currentUser = activeUser;
+      userState = db[activeUser];
+      if (!userState.achievements) userState.achievements = [];
+      if (!userState.activityHistory) userState.activityHistory = [new Date().toISOString().split('T')[0]];
+      isDev = (currentUser === "Рамен");
+    } else {
+      currentUser = null;
+      isDev = false;
+      userState = { completedTasks: [], streak: 0, achievements: [], activityHistory: [], lastLoginDate: new Date().toISOString().split('T')[0] };
+    }
+
+    updateUI();
+    renderTasks();
+    renderAchievements();
+    renderActivityCalendar();
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    localStorage.setItem('algo_theme', isLight ? 'light' : 'dark');
+  }
+
+  function persistData() {
+    if (!currentUser) { updateUI(); return; }
+    const db = JSON.parse(localStorage.getItem('algo_users_db') || "{}");
+    db[currentUser] = { ...userState, isDev: isDev };
+    localStorage.setItem('algo_users_db', JSON.stringify(db));
+    localStorage.setItem('algo_active_user', currentUser);
+    updateUI();
+  }
+
+  function checkAchievements() {
+    let gained = false;
+    function addAch(id) {
+      if (!userState.achievements.includes(id)) {
+        userState.achievements.push(id);
+        gained = true;
+      }
+    }
+
+    if (userState.completedTasks.length >= 1) addAch('first_step');
+    if ([1, 2, 3].every(id => userState.completedTasks.includes(id))) addAch('theorist');
+    if (userState.completedTasks.includes(3)) addAch('builder');
+    if (userState.completedTasks.includes(4)) addAch('practitioner');
+    if (userState.streak >= 3) addAch('on_fire');
+
+    if (gained) {
+      triggerConfetti();
+      persistData();
+      renderAchievements();
+    }
+  }
+
+  function renderAchievements() {
+    const container = document.getElementById('achievementsContainer');
+    container.innerHTML = '';
+
+    ACHIEVEMENTS_LIST.forEach(ach => {
+      const unlocked = userState.achievements.includes(ach.id);
+      const el = document.createElement('div');
+      el.className = `ach-card ${unlocked ? 'unlocked' : ''}`;
+      el.innerHTML = `
+        <div class="ach-icon">${ach.icon}</div>
+        <div>
+          <div class="ach-title">${ach.title} ${unlocked ? '✅' : '🔒'}</div>
+          <div class="ach-desc">${ach.desc}</div>
+        </div>
+      `;
+      container.appendChild(el);
+    });
+  }
+
+  function renderActivityCalendar() {
+    const grid = document.getElementById('activityCalendar');
+    grid.innerHTML = '';
+    const today = new Date();
+
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const isActive = userState.activityHistory && userState.activityHistory.includes(dateStr);
+      const dayEl = document.createElement('div');
+      dayEl.className = `cal-day ${isActive ? 'active' : ''}`;
+      dayEl.innerText = d.getDate();
+      dayEl.title = dateStr + (isActive ? ' — Есть активность' : '');
+      grid.appendChild(dayEl);
+    }
+  }
+
+  function renderTasks() {
+    const list = document.getElementById("tasksContainer");
+    list.innerHTML = '';
+
+    const theoryPassed = [1, 2, 3].every(id => userState.completedTasks.includes(id));
+    const canAccessPractice = theoryPassed || isDev;
+
+    TASKS.forEach(t => {
+      const isDone = userState.completedTasks.includes(t.id);
+      const isLocked = t.type === 'practice' && !canAccessPractice;
+
+      let tagClass = 'tag-theory';
+      let tagText = 'Теория + Тест';
+      if (t.type === 'flowchart_interactive') { tagClass = 'tag-interactive'; tagText = 'Интерактив + Тест'; }
+      if (t.type === 'order_builder') { tagClass = 'tag-interactive'; tagText = 'Конструктор'; }
+      if (t.type === 'practice') { tagClass = 'tag-practice'; tagText = 'Практика'; }
+
+      const item = document.createElement('div');
+      item.className = `task-card ${isDone ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+
+      const statusText = isDone ? '✅ Сдано' : (isLocked ? '🔒 Требуется теория (3/3)' : '🔓 Доступно');
+
+      item.innerHTML = `
+        <div>
+          <div class="task-title">${t.title}</div>
+          <div class="task-meta">
+            <span class="tag ${tagClass}">${tagText}</span>
+            <span style="color: var(--text-muted);">${statusText}</span>
+          </div>
+        </div>
+        <button class="btn ${isDone ? 'btn-outline' : ''} btn-sm"
+                onclick="openTask(${t.id})"
+                ${isLocked && !isDev ? 'disabled' : ''}>
+          ${isDone ? 'Повторить' : 'Открыть'}
+        </button>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  let currentQuizAnswers = {};
+  let currentOrderItems = [];
+  let currentFlowStep = 0;
+
+  function stepFlowViz() {
+    currentFlowStep = (currentFlowStep % 4) + 1;
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`fn-${i}`);
+      if (el) el.classList.toggle('active-step', i === currentFlowStep);
+    }
+  }
+
+  function resetFlowViz() {
+    currentFlowStep = 0;
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`fn-${i}`);
+      if (el) el.classList.remove('active-step');
+    }
+  }
+
+  function openTask(id) {
+    const task = TASKS.find(t => t.id === id);
+    if (!task) return;
+
+    document.getElementById('modalTitle').innerText = task.title;
+    const body = document.getElementById('modalBody');
+    const footer = document.getElementById('modalFooter');
+    currentQuizAnswers = {};
+    currentFlowStep = 0;
+
+    if (task.type === 'theory' || task.type === 'flowchart_interactive') {
+      let quizHtml = '<div class="quiz-box"><b>📝 Проверочный тест:</b>';
+      task.test.forEach((q, qIndex) => {
+        quizHtml += `
+          <div style="margin-top: 0.75rem;">
+            <div class="quiz-title">${q.question}</div>
+            <div class="quiz-options" id="quiz-opts-${qIndex}">
+              ${q.options.map((opt, optIndex) => `
+                <div class="quiz-item" onclick="selectQuizOpt(${qIndex}, ${optIndex})">${opt}</div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+      quizHtml += '</div>';
+
+      body.innerHTML = task.theoryText + quizHtml;
+      footer.innerHTML = `
+        <button class="btn btn-outline btn-sm" onclick="closeModal()">Закрыть</button>
+        <button class="btn btn-success btn-sm" onclick="checkTheoryAnswers(${task.id})">Сдать тест</button>
+      `;
+    } else if (task.type === 'order_builder') {
+      currentOrderItems = [...task.initialItems];
+      body.innerHTML = task.introText + `<div class="order-list" id="orderList"></div>`;
+      renderOrderList();
+      footer.innerHTML = `
+        <button class="btn btn-outline btn-sm" onclick="closeModal()">Закрыть</button>
+        <button class="btn btn-success btn-sm" onclick="checkOrderAnswer(${task.id})">Проверить порядок</button>
+      `;
+    } else {
+      body.innerHTML = task.taskText;
+      footer.innerHTML = `
+        <button class="btn btn-outline btn-sm" onclick="closeModal()">Закрыть</button>
+        <button class="btn btn-success btn-sm" onclick="checkPracticeAnswer(${task.id})">Отправить ответ</button>
+      `;
+    }
+
+    document.getElementById('taskModal').style.display = 'flex';
+  }
+
+  function renderOrderList() {
+    const el = document.getElementById('orderList');
+    if (!el) return;
+    el.innerHTML = '';
+    currentOrderItems.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'order-item';
+      row.innerHTML = `
+        <span>${item.text}</span>
+        <div class="order-btns">
+          <button class="btn btn-outline btn-sm" onclick="moveOrderItem(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+          <button class="btn btn-outline btn-sm" onclick="moveOrderItem(${idx}, 1)" ${idx === currentOrderItems.length - 1 ? 'disabled' : ''}>▼</button>
+        </div>
+      `;
+      el.appendChild(row);
+    });
+  }
+
+  function moveOrderItem(index, delta) {
+    const newIndex = index + delta;
+    if (newIndex < 0 || newIndex >= currentOrderItems.length) return;
+    const temp = currentOrderItems[index];
+    currentOrderItems[index] = currentOrderItems[newIndex];
+    currentOrderItems[newIndex] = temp;
+    renderOrderList();
+  }
+
+  function checkOrderAnswer(id) {
+    const task = TASKS.find(t => t.id === id);
+    const currentIds = currentOrderItems.map(i => i.id);
+    const isCorrect = JSON.stringify(currentIds) === JSON.stringify(task.correctOrder);
+    if (isCorrect || isDev) {
+      triggerConfetti();
+      completeTask(id);
+      closeModal();
+    } else {
+      alert("❌ Порядок шагов некорректен. Попробуйте еще раз!");
+    }
+  }
+
+  function selectQuizOpt(qIdx, optIdx) {
+    currentQuizAnswers[qIdx] = optIdx;
+    const container = document.getElementById(`quiz-opts-${qIdx}`);
+    Array.from(container.children).forEach((el, i) => {
+      el.className = `quiz-item ${i === optIdx ? 'selected' : ''}`;
+    });
+  }
+
+  function checkTheoryAnswers(id) {
+    const task = TASKS.find(t => t.id === id);
+    let allCorrect = true;
+
+    task.test.forEach((q, qIdx) => {
+      const selected = currentQuizAnswers[qIdx];
+      const container = document.getElementById(`quiz-opts-${qIdx}`);
+      if (selected === undefined || selected !== q.correct) {
+        allCorrect = false;
+        if (selected !== undefined) container.children[selected].classList.add('wrong');
+      }
+      container.children[q.correct].classList.add('correct');
+    });
+
+    if (allCorrect || isDev) {
+      triggerConfetti();
+      completeTask(id);
+      closeModal();
+    } else {
+      alert("⚠️ Есть ошибки в ответах. Проверьте правильность вариантов.");
+    }
+  }
+
+  function checkPracticeAnswer(id) {
+    const val = document.getElementById('practiceAnswer').value.trim();
+    if (val === TASKS.find(t => t.id === id).correctAnswer || isDev) {
+      triggerConfetti();
+      completeTask(id);
+      closeModal();
+    } else {
+      alert("❌ Неверный ответ. Попробуйте еще раз.");
+    }
+  }
+
+  function completeTask(id) {
+    if (!userState.completedTasks.includes(id)) {
+      userState.completedTasks.push(id);
+      if (userState.streak === 0) userState.streak = 1;
+
+      const today = new Date().toISOString().split('T')[0];
+      if (!userState.activityHistory.includes(today)) {
+        userState.activityHistory.push(today);
+      }
+
+      checkAchievements();
+      persistData();
+      renderTasks();
+      renderActivityCalendar();
+    }
+  }
+
+  function completeAllAtOnce() {
+    userState.completedTasks = [1, 2, 3, 4];
+    checkAchievements();
+    persistData();
+    renderTasks();
+    triggerConfetti();
+  }
+
+  function resetUserProgress() {
+    if (!confirm("Вы уверены, что хотите сбросить весь прогресс (задания, стримы и достижения)?")) return;
+    userState.completedTasks = [];
+    userState.achievements = [];
+    userState.streak = 0;
+    userState.activityHistory = [];
+    persistData();
+    renderTasks();
+    renderAchievements();
+    renderActivityCalendar();
+    alert("🧹 Прогресс полностью сброшен!");
+  }
+
+  function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
+  function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+  function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+
+  function handleAuthButtonClick() {
+    if (currentUser) {
+      if (confirm(`Выйти из профиля «${currentUser}»?`)) {
+        currentUser = null;
+        isDev = false;
+        userState = { completedTasks: [], streak: 0, achievements: [], activityHistory: [], lastLoginDate: new Date().toISOString().split('T')[0] };
+        localStorage.removeItem('algo_active_user');
+        updateUI();
+        renderTasks();
+        renderAchievements();
+        renderActivityCalendar();
+      }
+    } else {
+      openAuthModal();
+    }
+  }
+
+  function handleAuth(type) {
+    const login = document.getElementById('authLogin').value.trim();
+    const pass = document.getElementById('authPass').value.trim();
+    if (!login || !pass) return alert("Пожалуйста, введите логин и пароль!");
+
+    const db = JSON.parse(localStorage.getItem('algo_users_db') || "{}");
+    if (type === 'login') {
+      if (db[login] && db[login].pass === pass) {
+        currentUser = login;
+        userState = db[login];
+        if (!userState.achievements) userState.achievements = [];
+        if (!userState.activityHistory) userState.activityHistory = [new Date().toISOString().split('T')[0]];
+        isDev = (login === "Рамен");
+        persistData();
+        closeAuthModal();
+        renderTasks();
+        renderAchievements();
+        renderActivityCalendar();
+      } else {
+        alert("Неверный логин или пароль!");
+      }
+    } else {
+      if (db[login]) return alert("Пользователь с таким логином уже зарегистрирован!");
+      db[login] = {
+        pass: pass,
+        completedTasks: [],
+        streak: 0,
+        achievements: [],
+        activityHistory: [new Date().toISOString().split('T')[0]],
+        isDev: false,
+        lastLoginDate: new Date().toISOString().split('T')[0]
+      };
+      localStorage.setItem('algo_users_db', JSON.stringify(db));
+      currentUser = login;
+      userState = db[login];
+      isDev = false;
+      persistData();
+      closeAuthModal();
+      renderTasks();
+      renderAchievements();
+      renderActivityCalendar();
+    }
+  }
+
+  function updateUI() {
+    document.getElementById('userBadge').innerText = currentUser ? `👤 ${currentUser}` : '👤 Гость';
+    document.getElementById('authBtn').innerText = currentUser ? 'Выход' : 'Вход';
+    document.getElementById('streakBadge').innerText = `🔥 ${userState.streak} дн.`;
+    document.getElementById('streakDaysCount').innerText = userState.streak;
+    document.getElementById('tasksDoneCount').innerText = `${userState.completedTasks.length} / 4`;
+
+    document.getElementById('guestBanner').style.display = currentUser ? "none" : "flex";
+    document.getElementById("devCheatSheet").style.display = (isDev && currentUser === "Рамен") ? 'block' : 'none';
+
+    const payload = { user: currentUser, isDev: isDev, state: userState };
+    document.getElementById('syncTokenArea').value = btoa(encodeURIComponent(JSON.stringify(payload)));
+  }
+
+  function copySyncCode() {
+    const field = document.getElementById('syncTokenArea');
+    field.select();
+    navigator.clipboard.writeText(field.value).then(() => alert("📋 Ключ скопирован!"));
+  }
+
+  function importSyncCode() {
+    const code = prompt("Вставьте ключ синхронизации:");
+    if (!code) return;
+    try {
+      const parsed = JSON.parse(decodeURIComponent(atob(code.trim())));
+      if (parsed && parsed.state) {
+        currentUser = parsed.user || 'imported_user';
+        isDev = (currentUser === "Рамен");
+        userState = parsed.state;
+        if (!userState.achievements) userState.achievements = [];
+        if (!userState.activityHistory) userState.activityHistory = [new Date().toISOString().split('T')[0]];
+        persistData();
+        renderTasks();
+        renderAchievements();
+        renderActivityCalendar();
+        alert("✅ Данные успешно импортированы!");
+      }
+    } catch (e) {
+      alert("❌ Ошибка при чтении ключа.");
+    }
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    const map = { 'modules': 0, 'desc': 1, 'streak': 2, 'settings': 3 };
+    document.querySelectorAll(".tab-btn")[map[name]].classList.add("active");
+    document.getElementById(`tab-${name}`).classList.add("active");
+  }
+
+  window.onload = initApp;
+</script>
+</body>
+  </html>
